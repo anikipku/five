@@ -7,6 +7,7 @@
             border: 2px solid black;
             background-color: #FBF3D3;
             margin:auto;
+            border-collapse: collapse;
          }
          td{
             width:50px;
@@ -15,6 +16,7 @@
             vertical-align:middle;
             font-size:40px;
             cursor:pointer;
+            border: 1px solid #000;
          }
          .winner {
             background-color: #96B97D;
@@ -51,6 +53,19 @@
                   cell.onclick = function(){ makeMove(this); };
                   row.appendChild(cell);
                   board[i][j] = 0;
+
+                  if (i == 0 && j != 0) {
+                     cell.style.borderTop = "2px solid black";
+                  } else if (i == 14 && j != 0) {
+                     cell.style.borderBottom = "2px solid black";
+                  } else if (j == 0 && i != 0) {
+                     cell.style.borderLeft = "2px solid black";
+                  } else if (j == 14 && i != 0) {
+                     cell.style.borderRight = "2px solid black";
+                  } else if (i == 3 && j == 3 || i == 3 && j == 11 || i == 11 && j == 3 || i == 11 && j == 11 || i == 7 && j == 7) {
+                     cell.style.background = "#000";
+                  }
+                  
                }
             }
             turn = -1;
