@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>五子棋游戏</title>
+      <style type="text/css">
+         table{
+            border: 2px solid black;
+            background-color: #FBF3D3;
+            margin:auto;
+         }
+         td{
+            width:50px;
+            height:50px;
+            text-align:center;
+            vertical-align:middle;
+            font-size:40px;
+            cursor:pointer;
+         }
+         .winner {
+            background-color: #96B97D;
+         }
+      </style>
+   </head>
+   <body onload="init()">
+      <h1>五子棋游戏</h1>
+      <table>
+         <tbody id="board"></tbody>
+      </table>
+      <br>
+      <p>当前棋手: <span id="current_player">黑子</span></p>
+      <button onclick="restart()">重新开始游戏</button>
+      <script type="text/javascript">
+         var turn = -1; // -1 for black, 1 for white 
+         var board;  //the game board, represented as an array
+         var gameOver; //a boolean to determine whether the game is over
+         var playerDisplay; //a reference to the HTML element that displays the current player
+         var winner; //a reference to the winning player
+         
+         //this function creates the game board as an HTML table
+         function init(){
+            gameOver = false;
+            board = new Array(15);
+            for (var i=0; i<15; i++){
+               board[i] = new Array(15);
+               var row = document.createElement("tr");
+               document.getElementById("board").appendChild(row);
+               for (var j=0; j<15; j++){
+                  var cell = document.createElement("td");
+                  cell.setAttribute("data-x", j);
+                  cell.setAttribute("data-y", i);
+                  cell.onclick = function(){ makeMove(this); };
+                  row.appendChild(cell);
+                  board[i][j] = 0;
+               }
+            }
+            turn = -1;
+            playerDisplay = document.getElementById("current_player");
+            playerDisplay.innerHTML = "黑子";
+         }
+         
+         //this function makes a move on the game board, given an HTML element representing the clicked cell
+         function makeMove(cell){
+            if (gameOver) return;
+            var x = cell.getAttribute("data-x");
+            var y = cell.getAttribute("data-y");
+            if (board[y][x] != 0) return; //already occupied
+            board[y][x] = turn;
+            if (turn == -1){
+               cell.innerHTML = "●";
+               playerDisplay.innerHTML = "白子";
+            } else {
+               cell.innerHTML = "○";
+               playerDisplay.innerHTML = "黑子";
+            }
+            if (findWinner()) {
+               gameOver = true;
+               playerDisplay.innerHTML = winner == -1 ? "黑子胜利！" : "白子胜利！";
+               var cells = document.getElementsByTagName("td");
+               for (var i=0; i<cells.length; i++){
+                  var x = cells[i].getAttribute("data-x");
+                  var y = cells[i].getAttribute("data-y");
+                  if (board[y][x] == winner){
+                     cells[i].classList.add("winner");
+                  }
+               }
+            } else {
+               turn *= -1;
+            }
+         }
+         
+         //this function checks the game board for a winner and returns true if there is one
+         function findWinner(){
+            //check rows
+            for (var y=0; y<15; y++){
+               for (var x=0; x<11; x++){
+                  if (board[y][x] == 0) continue;
+                  if (board[y][x] == board[y][x+1] && board[y][x] == board[y][x+2] && board[y][x] == board[y][x+3] && board[y][x] == board[y][x+4]){
+                     winner = board[y][x];
+                     return true;
+                  }
+               }
+            }
+            //check columns
+            for (var x=0; x<15; x++){
+               for (var y=0; y<11; y++){
+                  if (board[y][x] == 0) continue;
+                  if (board[y][x] == board[y+1][x] && board[y][x] == board[y+2][x] && board[y][x] == board[y+3][x] && board[y][x] == board[y+4][x]){
+                     winner = board[y][x];
+                     return true;
+                  }
+               }
+            }
+            //check diagonal
+            for (var x=0; x<11; x++){
+               for (var y=0; y<11; y++){
+                  if (board[y][x] == 0) continue;
+                  if (board[y][x] == board[y+1][x+1] && board[y][x] == board[y+2][x+2] && board[y][x] == board[y+3][x+3] && board[y][x] == board[y+4][x+4]){
+                     winner = board[y][x];
+                     return true;
+                  }
+               }
+            }
+            //check reverse diagonal
+            for (var x=0; x<11; x++){
+               for (var y=4; y<15; y++){
+                  if (board[y][x] == 0) continue;
+                  if (board[y][x] == board[y-1][x+1] && board[y][x] == board[y-2][x+2] && board[y][x] == board[y-3][x+3] && board[y][x] == board[y-4][x+4]){
+                     winner = board[y][x];
+                     return true;
+                  }
+               }
+            }
+            return false;
+         }
+         
+         //this function restarts the game
+         function restart(){
+            var cells = document.getElementsByTagName("td");
+            for (var i=0; i<cells.length; i++){
+               cells[i].innerHTML = "";
+               cells[i].classList.remove("winner");
+            }
+            gameOver = false;
+            board = null;
+            init();
+         }
+      </script>
+   </body>
+</html>
